@@ -1,0 +1,475 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GGProduction 영상 아카이빙 및 콘텐츠 활용을 위한 DAM 전략 기획서</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F8F7F4; /* Light background */
+            color: #333333;
+            scroll-behavior: smooth;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 960px; /* Max width for readability */
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        .section-title {
+            color: #4A6C8C; /* Main blue */
+            font-weight: 700;
+            font-size: 2.25rem; /* text-4xl */
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .accent-color {
+            color: #C8A97E; /* Accent color */
+            font-weight: 600;
+            letter-spacing: 0.05em; /* tracking-wider */
+            text-transform: uppercase;
+        }
+        .bg-main-blue {
+            background-color: #4A6C8C;
+        }
+        .text-main-blue {
+            color: #4A6C8C;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-lg */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        .list-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+        .list-bullet {
+            font-size: 1.25rem;
+            line-height: 1;
+            margin-right: 0.5rem;
+            color: #C8A97E;
+        }
+        code {
+            background-color: #f0f0f0;
+            padding: 0.2em 0.4em;
+            border-radius: 0.3em;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.875em; /* text-sm */
+        }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Styles for the Table of Contents navigation */
+        .nav-link-toc {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: #e0e7ee; /* Lighter blue/gray background */
+            color: #4A6C8C;
+            border-radius: 0.5rem; /* Rounded corners */
+            font-weight: 500;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            text-decoration: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .nav-link-toc:hover {
+            background-color: #4A6C8C;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh; /* Limit height for scrollability */
+            overflow-y: auto; /* Enable scrolling for long content */
+            position: relative;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .modal-overlay.open .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .modal-close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.2s ease;
+        }
+        .modal-close-button:hover {
+            color: #333;
+        }
+        .modal-heading {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4A6C8C;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .modal-category-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #C8A97E;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px solid #eee;
+        }
+        .modal-category-item {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        .modal-category-item strong {
+            color: #4A6C8C;
+        }
+        .modal-category-item span.type-label {
+            font-size: 0.8rem;
+            background-color: #e0e7ee;
+            color: #4A6C8C;
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.25rem;
+            margin-left: 0.5rem;
+            font-weight: 500;
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .section-title {
+                font-size: 3rem; /* md:text-5xl */
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header Section -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm py-4">
+        <div class="container flex items-center justify-between">
+            <h1 class="text-xl font-bold text-main-blue">GGProduction 영상 아카이빙 및 콘텐츠 활용을 위한 DAM 전략 기획서</h1>
+            <!-- Simple navigation could be added here if needed, but keeping it minimal for simplicity -->
+        </div>
+    </header>
+
+    <main>
+        <!-- Section: Table of Contents -->
+        <section id="table-of-contents" class="py-12 bg-gray-100">
+            <div class="container text-center">
+                <h2 class="text-2xl font-bold text-main-blue mb-6 fade-in">목차</h2>
+                <nav class="flex flex-wrap justify-center gap-4 fade-in">
+                    <a href="#overview" class="nav-link-toc">1. 개요 및 배경</a>
+                    <a href="#current-goals" class="nav-link-toc">2. 현황 및 목표</a>
+                    <a href="#dam-strategy" class="nav-link-toc">3. DAM 시스템 도입</a>
+                    <a href="#expected-outcomes" class="nav-link-toc">4. 기대 효과</a>
+                    <a href="#conclusion" class="nav-link-toc">5. 결론</a>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Section: 개요 및 배경 -->
+        <section id="overview" class="py-16 md:py-24">
+            <div class="container text-center">
+                <p class="text-base accent-color fade-in">Overview & Background</p>
+                <h2 class="section-title fade-in">GGProduction 영상 아카이빙 및 콘텐츠 활용을 위한 DAM 전략 기획서</h2>
+                <p class="mt-6 text-lg text-gray-600 max-w-3xl mx-auto fade-in">
+                    저희 회사는 WSOP를 비롯한 세계적인 포커 대회의 영상 촬영 및 이를 활용한 콘텐츠 제작을 전문으로 하는 프로덕션 회사입니다. 스포츠 분야에서 오랜 역사를 가진 종목들이 수많은 대회 영상을 체계적으로 아카이빙하여 다양한 콘텐츠 제작에 활용하고 있듯이, 저희 또한 WSOP를 비롯한 풍부한 포커 대회 영상 자산을 효과적으로 관리하고 지속적으로 콘텐츠 제작에 활용할 필요성을 느끼고 있습니다.
+                    <br><br>
+                    이러한 배경 속에서, 우리는 효율적인 디지털 자산 관리(DAM, Digital Asset Management) 시스템 구축을 통해 영상 자산의 가치를 극대화하고자 합니다.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section: 현황 및 목표 -->
+        <section id="current-goals" class="py-16 md:py-24 bg-white">
+            <div class="container">
+                <p class="text-base accent-color text-center fade-in">Current Status & Goals</p>
+                <h2 class="section-title text-center fade-in">현황 및 목표</h2>
+
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="card fade-in" style="transition-delay: 100ms;">
+                        <h3 class="text-xl font-bold text-main-blue mb-4">2.1 현황</h3>
+                        <ul class="list-none space-y-3 text-gray-700">
+                            <li class="list-item"><span class="list-bullet">▪</span>다년간 축적된 포커 대회 영상 자료 보유</li>
+                            <li class="list-item"><span class="list-bullet">▪</span>지속적인 신규 대회 영상 확보</li>
+                            <li class="list-item"><span class="list-bullet">▪</span>콘텐츠 제작을 위한 영상 소스 접근 및 활용의 비효율성 개선 필요</li>
+                        </ul>
+                    </div>
+                    <div class="card fade-in" style="transition-delay: 200ms;">
+                        <h3 class="text-xl font-bold text-main-blue mb-4">2.2 목표</h3>
+                        <ul class="list-none space-y-3 text-gray-700">
+                            <li class="list-item"><span class="list-bullet">▪</span>모든 포커 대회 영상을 체계적으로 아카이빙하고 디지털 자산화합니다.</li>
+                            <li class="list-item"><span class="list-bullet">▪</span>콘텐츠 제작팀(편집자, 기획자)이 필요한 영상 소스를 쉽고 빠르게 검색하고 추출할 수 있는 환경을 구축합니다.</li>
+                            <li class="list-item"><span class="list-bullet">▪</span>아카이브된 영상을 활용하여 새로운 콘텐츠 제작 효율성을 증대하고, 궁극적으로 콘텐츠 경쟁력을 강화합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: DAM 시스템 도입: iconik 활용 전략 -->
+        <section id="dam-strategy" class="py-16 md:py-24">
+            <div class="container">
+                <p class="text-base accent-color text-center fade-in">DAM System Adoption</p>
+                <h2 class="section-title text-center fade-in">DAM 시스템 도입: iconik 활용 전략</h2>
+                <p class="mt-6 text-lg text-gray-600 text-center max-w-3xl mx-auto fade-in">
+                    우리는 이러한 목표 달성을 위해 `iconik`이라는 DAM 프로그램을 핵심 도구로 선정하고, 다음과 같은 전략적 의도를 가지고 시스템을 설계했습니다.
+                </p>
+
+                <div class="mt-12 card fade-in">
+                    <h3 class="text-xl font-bold text-main-blue mb-4">3.1 iconik 도입의 핵심 의도</h3>
+                    <p class="text-gray-700">
+                        저희 DAM 시스템 설계의 핵심 의도는 **콘텐츠 제작의 효율성 극대화**에 있습니다. 구체적으로, 편집자나 기획자가 기획한 콘텐츠에 필요한 영상 소스 및 비디오 클립을 빠르고 정확하게 찾아 활용할 수 있도록 지원하는 것입니다.
+                    </p>
+                </div>
+
+                <div class="mt-12 card fade-in">
+                    <h3 class="text-xl font-bold text-main-blue mb-4">3.2 DAM 시스템 설계의 세부 전략</h3>
+                    <ul class="list-none space-y-6 text-gray-700">
+                        <li class="list-item">
+                            <span class="list-bullet">▪</span>
+                            <div>
+                                <strong class="font-semibold">체계적인 메타데이터 및 태그 분류:</strong><br>
+                                모든 `ingest`되는 영상 자료에 대해 포커와 관련된 표준화된 태그 체계를 적용합니다.
+                                예시 태그: `WSOP_2023`, `Main_Event`, `Final_Table`, `Bluff`, `All_In`, `River`, `Player_Name_JohnDoe`, `Hand_ID_XYZ`, `Highlight_Reel` 등.
+                                이를 통해 영상의 내용, 참가 선수, 특정 플레이 상황, 대회 정보 등을 정확하게 분류합니다.
+                            </div>
+                        </li>
+                        <li class="list-item">
+                            <span class="list-bullet">▪</span>
+                            <div>
+                                <strong class="font-semibold">강력한 검색 기능 활용:</strong><br>
+                                iconik의 고급 검색 기능을 활용하여, 기획자 및 편집자가 필요한 영상 클립을 태그 기반으로 검색할 수 있도록 합니다.
+                                예시 검색: "WSOP 2023 Main Event Final Table All-In", "Player John Doe Bluff Hand", "Highlights Best River Calls".
+                                이를 통해 수많은 영상 자산 속에서 원하는 특정 순간이나 장면을 신속하게 식별할 수 있습니다.
+                            </div>
+                        </li>
+                        <li class="list-item">
+                            <span class="list-bullet">▪</span>
+                            <div>
+                                <strong class="font-semibold">손쉬운 영상 추출 및 워크플로우 연동:</strong><br>
+                                검색된 관련 영상을 미리보기 기능을 통해 확인하고, 필요한 클립을 직관적으로 선택하여 추출할 수 있도록 합니다.
+                                추출된 영상은 편집 소프트웨어(NLE)로 원활하게 연동될 수 있도록 워크플로우를 구축하여, 콘텐츠 제작 과정의 병목 현상을 최소화합니다.
+                            </div>
+                        </li>
+                        <li class="list-item">
+                            <span class="list-bullet">▪</span>
+                            <div>
+                                <strong class="font-semibold">장기적인 아카이빙 및 재활용:</strong><br>
+                                iconik을 통해 모든 대회 영상이 안전하게 아카이빙되며, 시간이 지나도 영상 자산의 접근성과 활용성을 유지합니다.
+                                과거 영상 자료의 손쉬운 재활용을 통해 **다양한 형태의 콘텐츠(다큐멘터리, 분석 영상, 하이라이트 등)**를 지속적으로 생산할 수 있는 기반을 마련합니다.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Special Appendix Button -->
+                <div class="mt-12 text-center fade-in">
+                    <button id="openAppendixModal" class="nav-link-toc">Special Appendix: iconik 카테고리 상세</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: 기대 효과 -->
+        <section id="expected-outcomes" class="py-16 md:py-24 bg-white">
+            <div class="container text-center">
+                <p class="text-base accent-color fade-in">Expected Outcomes</p>
+                <h2 class="section-title fade-in">기대 효과</h2>
+                <p class="mt-6 text-lg text-gray-600 max-w-3xl mx-auto fade-in">
+                    이러한 DAM 전략을 통해 우리는 다음과 같은 기대 효과를 얻을 수 있을 것으로 예상합니다.
+                </p>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="card p-6 fade-in" style="transition-delay: 100ms;">
+                        <span class="text-4xl text-accent-color block mb-3">⏱️</span>
+                        <h3 class="text-lg font-bold text-main-blue">제작 효율성 증대</h3>
+                        <p class="text-sm text-gray-600 mt-2">영상 소스 탐색 시간 단축 및 워크플로우 간소화.</p>
+                    </div>
+                    <div class="card p-6 fade-in" style="transition-delay: 200ms;">
+                        <span class="text-4xl text-accent-color block mb-3">💰</span>
+                        <h3 class="text-lg font-bold text-main-blue">자산 가치 극대화</h3>
+                        <p class="text-sm text-gray-600 mt-2">체계적인 관리를 통한 과거 영상의 지속적인 재활용.</p>
+                    </div>
+                    <div class="card p-6 fade-in" style="transition-delay: 300ms;">
+                        <span class="text-4xl text-accent-color block mb-3">🌟</span>
+                        <h3 class="text-lg font-bold text-main-blue">콘텐츠 품질 향상</h3>
+                        <p class="text-sm text-gray-600 mt-2">풍부한 영상 자산을 활용한 심도 있고 다채로운 콘텐츠 제작 가능.</p>
+                    </div>
+                    <div class="card p-6 fade-in" style="transition-delay: 400ms;">
+                        <span class="text-4xl text-accent-color block mb-3">📈</span>
+                        <h3 class="text-lg font-bold text-main-blue">비즈니스 성장 기반</h3>
+                        <p class="text-sm text-gray-600 mt-2">영상 아카이브를 통한 독점적 콘텐츠 경쟁력 확보.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: 결론 -->
+        <section id="conclusion" class="py-16 md:py-24 bg-main-blue text-white">
+            <div class="container text-center">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-6 fade-in">결론</h2>
+                <p class="text-lg text-gray-200 max-w-3xl mx-auto fade-in">
+                    iconik을 활용한 DAM 시스템 구축은 저희 회사의 콘텐츠 제작 역량을 한 단계 끌어올리고, 오랜 기간 축적될 포커 대회 영상 자산의 전략적 활용을 가능하게 할 것입니다. 이를 통해 우리는 끊임없이 변화하는 미디어 환경 속에서 지속적으로 매력적인 포커 콘텐츠를 생산하며 시장을 선도해 나갈 것입니다.
+                </p>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-gray-800 text-white py-6 text-center text-sm">
+        <div class="container">
+            <p>&copy; 2025 GG Production. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Modal Structure -->
+    <div id="appendixModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-button" id="closeAppendixModal">&times;</button>
+            <h2 class="modal-heading">iconik 카테고리 상세 Appendix</h2>
+
+            <div class="modal-section">
+                <h3 class="modal-category-title">1. Iconik Category (기본 필드)</h3>
+                <ul>
+                    <li class="modal-category-item"><strong>Description:</strong> 영상에 대한 전반적인 설명 <span class="type-label">TT</span></li>
+                    <li class="modal-category-item"><strong>Project Name:</strong> 대회 및 프로젝트 제목 (ex) 2024 WSOP, 2024 WSOP PARADISE) <span class="type-label">TT</span></li>
+                    <li class="modal-category-item"><strong>Year:</strong> 해당 대회 년도 <span class="type-label">TT</span></li>
+                    <li class="modal-category-item"><strong>Location:</strong> 대회 개최 장소 및 촬영 장소 <span class="type-label">TT</span></li>
+                    <li class="modal-category-item"><strong>Venue:</strong> 대회장, 호텔 <span class="type-label">DD</span></li>
+                    <li class="modal-category-item"><strong>Episode / Event:</strong> 대회 이벤트 명, EP 번호 <span class="type-label">TT</span></li>
+                    <li class="modal-category-item"><strong>Source:</strong> PGM / Clean 택 1 <span class="type-label">DD</span></li>
+                    <li class="modal-category-item"><strong>Game Type:</strong> Cash Game / Mystery Hands 등 특별 상황 선택 <span class="type-label">DD</span></li>
+                </ul>
+            </div>
+
+            <div class="modal-section">
+                <h3 class="modal-category-title">2. Descriptive Fields (설명 필드)</h3>
+                <ul>
+                    <li class="modal-category-item"><strong>Players Tags:</strong> 플레이어 이름, 플레이어 특징(배우, 인플루언서, 스포츠스타, 여성 플레이어 등) <span class="type-label">TT</span></li>
+                    <li class="modal-category-item"><strong>Hand Grade:</strong> 핸드 등급, 별 1,2,3개로 구분 <span class="type-label">DD</span></li>
+                    <li class="modal-category-item"><strong>Hand Tag:</strong> AA, KK, AA vs KK 등 핸드 자체가 의미 있는 경우 선택 <span class="type-label">DD</span></li>
+                    <li class="modal-category-item"><strong>EPIC HAND:</strong> 낮은 확률로 메이드 되는 족보 <span class="type-label">DD</span></li>
+                    <li class="modal-category-item"><strong>Tournament:</strong> 토너먼트 플레이시 발생하는 유효한 상황 <span class="type-label">DD</span></li>
+                    <li class="modal-category-item"><strong>Poker Play Tags:</strong> 포커 플레이시 발생되는 다양한 플레이나 상황을 표현하는 단어들 입력. (가장 폭 넓게 쓸 수 있는 태그 구분) <span class="type-label">TT</span></li>
+                    <li class="modal-category-item ml-4">- 예시: Brutal Cooler, Good Fold, Hero Fold, tank, Cooler</li>
+                    <li class="modal-category-item"><strong>Adjective:</strong> 상황을 강조해주는 주요 형용사들 <span class="type-label">DD</span></li>
+                    <li class="modal-category-item"><strong>Emotion:</strong> 플레이어가 느끼는 주요 감정들 <span class="type-label">DD</span></li>
+                    <li class="modal-category-item"><strong>Appearance / Outfit:</strong> 외형, 착장 등 외모 관련 <span class="type-label">DD</span></li>
+                    <li class="modal-category-item"><strong>Scenery / Object:</strong> 풍경, 사물 등 <span class="type-label">DD</span></li>
+                    <li class="modal-category-item"><strong>AI Tags:</strong> AI가 인식해서 자동 생성되는 태그 분류 <span class="type-label">TT</span></li>
+                </ul>
+            </div>
+
+            <div class="modal-section">
+                <h3 class="modal-category-title">3. Detail Fields (상세 필드 - Poker Play Tags 상세 분류)</h3>
+                <ul>
+                    <li class="modal-category-item"><strong>Badbeat:</strong> 다양한 Badbeat 항목 분류 <span class="type-label">DD</span></li>
+                    <li class="modal-category-item"><strong>Bluff:</strong> 다양한 Bluff 항목 분류 <span class="type-label">DD</span></li>
+                    <li class="modal-category-item"><strong>Suckout:</strong> 다양한 Suckout 항목 분류 <span class="type-label">DD</span></li>
+                    <li class="modal-category-item"><strong>Cooler:</strong> 다양한 Cooler 상황 항목 분류 <span class="type-label">DD</span></li>
+                    <li class="modal-category-item"><strong>Runout:</strong> Runout에 관련된 상황들 항목 분류 (ex: 1out) <span class="type-label">DD</span></li>
+                    <li class="modal-category-item"><strong>Post Flop:</strong> 포스트플랍 플레이에 발생하는 상황 항목 분류 <span class="type-label">DD</span></li>
+                    <li class="modal-category-item"><strong>All-in:</strong> 올인이 나오는 다양한 상황 항목 분류 <span class="type-label">DD</span></li>
+                </ul>
+            </div>
+            
+            <p class="text-sm text-gray-500 text-center mt-6">* TT: Text Tag 형식, DD: Drop down 형식</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const faders = document.querySelectorAll('.fade-in');
+            const appearOptions = {
+                threshold: 0.2,
+                rootMargin: "0px 0px -50px 0px"
+            };
+            const appearOnScroll = new IntersectionObserver(function(entries, appearOnScroll) {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) {
+                        return;
+                    } else {
+                        entry.target.classList.add('visible');
+                        appearOnScroll.unobserve(entry.target);
+                    }
+                });
+            }, appearOptions);
+
+            faders.forEach(fader => {
+                appearOnScroll.observe(fader);
+            });
+
+            // Modal functionality
+            const openModalBtn = document.getElementById('openAppendixModal');
+            const closeModalBtn = document.getElementById('closeAppendixModal');
+            const appendixModal = document.getElementById('appendixModal');
+
+            if (openModalBtn && closeModalBtn && appendixModal) {
+                openModalBtn.addEventListener('click', () => {
+                    appendixModal.classList.add('open');
+                });
+
+                closeModalBtn.addEventListener('click', () => {
+                    appendixModal.classList.remove('open');
+                });
+
+                appendixModal.addEventListener('click', (e) => {
+                    if (e.target === appendixModal) {
+                        appendixModal.classList.remove('open');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
